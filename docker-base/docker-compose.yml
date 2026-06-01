@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  frontend:
+    build:
+      context: ..
+      dockerfile: Dockerfile.frontend
+    container_name: hpm_frontend
+    restart: unless-stopped
+    networks:
+      - hpm_net
+
+  backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: hpm_backend
+    restart: unless-stopped
+    volumes:
+      - ../core:/app
+      - hpm_data:/data
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - hpm_net
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: hpm_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - hpm_net
+
+networks:
+  hpm_net:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+  hpm_data:

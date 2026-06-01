@@ -1,0 +1,19 @@
+# HTML Presentation Maker — Caddy Reverse Proxy
+# Replace "localhost" with your domain in production
+
+localhost {
+    # Frontend React app
+    reverse_proxy frontend:3000
+
+    # Backend FastAPI — API routes
+    reverse_proxy /api/* backend:8000
+
+    # Security headers
+    header {
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    encode gzip
+}
