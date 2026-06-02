@@ -49,6 +49,7 @@ interface Store {
   setShapeStyle: (style: Partial<ShapeStyle>) => void
   setShapeDrawMode: (mode: ShapeDrawMode) => void
   togglePreview: () => void
+  updateObject: (props: any) => void
 }
 
 export const usePresentationStore = create<Store>()(
@@ -105,6 +106,13 @@ export const usePresentationStore = create<Store>()(
     setShapeStyle: (style) => set((s) => { s.shapeStyle = { ...s.shapeStyle, ...style } }),
     setShapeDrawMode: (mode) => set((s) => { s.shapeDrawMode = mode }),
     togglePreview: () => set((s) => { s.isPreviewOpen = !s.isPreviewOpen }),
+    updateObject: (props) => set((s) => {
+      const obj = (window as any).__fabric_canvas?.getActiveObject()
+      if (obj) {
+        obj.set(props)
+        ;(window as any).__fabric_canvas?.renderAll()
+        ;(window as any).__fabric_canvas?.fire('object:modified', { target: obj } as any)
+      }
+    }),
   }))
 )
-

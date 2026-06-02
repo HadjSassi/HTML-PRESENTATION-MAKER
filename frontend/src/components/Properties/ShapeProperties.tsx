@@ -3,6 +3,7 @@ import { ColorPicker } from '../UI/ColorPicker'
 import { NumberInput } from '../UI/Input'
 import { Slider } from '../UI/Select'
 import { usePresentationStore } from '../../store/usePresentationStore'
+import { LinkProperties } from './LinkProperties'
 
 interface Props { obj: fabric.Object; canvas: fabric.Canvas }
 
@@ -53,7 +54,10 @@ export function ShapeProperties({ obj, canvas }: Props) {
         step={0.01}
         onChange={(v) => apply({ opacity: v }, { opacity: v })}
       />
+      <div className="h-px bg-border -mx-4" />
+      <div className="-mx-4 -my-4">
+         <LinkProperties obj={obj} canvas={canvas} />
+      </div>
     </div>
   )
 }
-

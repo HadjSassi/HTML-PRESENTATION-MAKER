@@ -28,7 +28,10 @@ export function CanvasEditor() {
 
   // Share fabric canvas via context
   useEffect(() => {
-    if (fabricRef.current) (canvasRef as React.MutableRefObject<typeof fabricRef.current>).current = fabricRef.current
+    if (fabricRef.current) {
+      (canvasRef as React.MutableRefObject<typeof fabricRef.current>).current = fabricRef.current
+      ;(window as any).__fabric_canvas = fabricRef.current
+    }
   }, [fabricRef.current])
 
   const slide = presentation.slides[currentSlideIndex]
@@ -80,4 +83,3 @@ export function CanvasEditor() {
     </div>
   )
 }
-

@@ -4,13 +4,17 @@ import { Select } from '../UI/Select'
 import { NumberInput } from '../UI/Input'
 import { FONT_FAMILIES, FONT_SIZES, TEXT_ALIGNS } from '../../utils/constants'
 import { usePresentationStore } from '../../store/usePresentationStore'
+import { LinkProperties } from './LinkProperties'
 
 interface Props { obj: fabric.IText; canvas: fabric.Canvas }
 
 export function TextProperties({ obj, canvas }: Props) {
   const { setLastSelectedTextColor } = usePresentationStore()
+  
   const update = (props: Partial<fabric.IText>) => {
     obj.set(props)
+    // Manually fire the modified event to trigger a save
+    canvas.fire('object:modified', { target: obj })
     canvas.renderAll()
   }
 
@@ -60,13 +64,14 @@ export function TextProperties({ obj, canvas }: Props) {
       <div>
         <h3 className="text-xs font-semibold text-textSecondary uppercase tracking-wider mb-3">Position</h3>
         <div className="grid grid-cols-2 gap-2">
-          <NumberInput label="X" value={Math.round(obj.left ?? 0)} onChange={(v) => { obj.set({ left: v }); canvas.renderAll() }} />
-          <NumberInput label="Y" value={Math.round(obj.top ?? 0)} onChange={(v) => { obj.set({ top: v }); canvas.renderAll() }} />
+          <NumberInput label="X" value={Math.round(obj.left ?? 0)} onChange={(v) => update({ left: v })} />
+          <NumberInput label="Y" value={Math.round(obj.top ?? 0)} onChange={(v) => update({ top: v })} />
           <NumberInput label="W" value={Math.round(pos.width)} onChange={() => {}} min={10} />
           <NumberInput label="H" value={Math.round(pos.height)} onChange={() => {}} min={10} />
         </div>
       </div>
+      <div className="h-px bg-border" />
+      <LinkProperties obj={obj} canvas={canvas} />
     </div>
   )
 }
-

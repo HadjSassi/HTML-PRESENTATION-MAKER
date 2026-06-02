@@ -2,6 +2,7 @@ import { type fabric } from 'fabric'
 import { NumberInput } from '../UI/Input'
 import { Select } from '../UI/Select'
 import { ColorPicker } from '../UI/ColorPicker'
+import { LinkProperties } from './LinkProperties'
 
 interface ImageProps { obj: fabric.Image; canvas: fabric.Canvas }
 
@@ -37,6 +38,10 @@ export function ImageProperties({ obj, canvas }: ImageProps) {
         <input type="range" min={0} max={1} step={0.01} value={obj.opacity ?? 1}
           onChange={(e) => { obj.set({ opacity: Number(e.target.value) }); canvas.renderAll() }}
           className="w-full accent-accent" />
+      </div>
+      <div className="h-px bg-border" />
+      <div className="-mx-4 -my-4">
+        <LinkProperties obj={obj} canvas={canvas} />
       </div>
     </div>
   )
@@ -91,7 +96,10 @@ export function VideoProperties({ obj, canvas }: VideoProps) {
           <NumberInput label="Height" value={Math.round(obj.height ?? 0)} onChange={(v) => { obj.set({ height: v }); canvas.renderAll() }} />
         </div>
       </div>
+      <div className="h-px bg-border" />
+      <div className="-mx-4 -my-4">
+        <LinkProperties obj={obj} canvas={canvas} />
+      </div>
     </div>
   )
 }
-

@@ -5,7 +5,7 @@ import { usePresentationStore } from '../store/usePresentationStore'
 
 const CANVAS_W = 960
 const CANVAS_H = 540
-const SERIALIZE_PROPS = ['id', 'customType', 'videoSrc', 'videoType', 'shapeType']
+const SERIALIZE_PROPS = ['id', 'customType', 'videoSrc', 'videoType', 'shapeType', 'linkedSlideId']
 
 export function useFabricCanvas(
   elRef: RefObject<HTMLCanvasElement | null>
@@ -319,4 +319,3 @@ export function useFabricCanvas(
 
   return fabricRef
 }
-
