@@ -7,7 +7,7 @@ import { ANIMATION_OPTIONS } from '../../types'
 import type { Animation } from '../../types'
 
 export function SlideProperties() {
-  const { presentation, currentSlideIndex, updateSlideBackground, updateSlideAnimation, updateSlideTitle } =
+  const { presentation, currentSlideIndex, updateSlideBackground, updateSlideAnimation, updateSlideTitle, updateCanvas } =
     usePresentationStore()
   const { canvasRef } = useCanvasCtx()
   const slide = presentation.slides[currentSlideIndex]
@@ -18,6 +18,9 @@ export function SlideProperties() {
     if (canvasRef.current) {
       canvasRef.current.backgroundColor = color
       canvasRef.current.renderAll()
+      const json = JSON.stringify(canvasRef.current.toJSON(['id', 'customType', 'videoSrc']))
+      const thumb = canvasRef.current.toDataURL({ format: 'png', quality: 0.4, multiplier: 0.25 })
+      updateCanvas(currentSlideIndex, json, thumb)
     }
   }
 

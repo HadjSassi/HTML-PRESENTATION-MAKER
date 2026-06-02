@@ -18,6 +18,7 @@ interface Store {
   presentation: Presentation
   currentSlideIndex: number
   selectedObjectId: string | null
+  lastSelectedTextColor: string | null
   isPreviewOpen: boolean
   isDirty: boolean
   // Actions
@@ -34,6 +35,7 @@ interface Store {
   updateSlideAnimation: (idx: number, anim: Animation) => void
   updateSlideTitle: (idx: number, title: string) => void
   setSelectedObjectId: (id: string | null) => void
+  setLastSelectedTextColor: (color: string) => void
   togglePreview: () => void
 }
 
@@ -42,11 +44,12 @@ export const usePresentationStore = create<Store>()(
     presentation: newPresentation(),
     currentSlideIndex: 0,
     selectedObjectId: null,
+    lastSelectedTextColor: null,
     isPreviewOpen: false,
     isDirty: false,
 
-    reset: () => set((s) => { s.presentation = newPresentation(); s.currentSlideIndex = 0; s.selectedObjectId = null; s.isDirty = false }),
-    load: (p) => set((s) => { s.presentation = p; s.currentSlideIndex = 0; s.selectedObjectId = null; s.isDirty = false }),
+    reset: () => set((s) => { s.presentation = newPresentation(); s.currentSlideIndex = 0; s.selectedObjectId = null; s.lastSelectedTextColor = null; s.isDirty = false }),
+    load: (p) => set((s) => { s.presentation = p; s.currentSlideIndex = 0; s.selectedObjectId = null; s.lastSelectedTextColor = null; s.isDirty = false }),
     setPresentationInfo: (info) => set((s) => { Object.assign(s.presentation, info); s.isDirty = true }),
 
     addSlide: () => set((s) => {
@@ -84,6 +87,7 @@ export const usePresentationStore = create<Store>()(
     updateSlideTitle: (idx, title) => set((s) => { s.presentation.slides[idx].title = title; s.isDirty = true }),
 
     setSelectedObjectId: (id) => set((s) => { s.selectedObjectId = id }),
+    setLastSelectedTextColor: (color) => set((s) => { s.lastSelectedTextColor = color }),
     togglePreview: () => set((s) => { s.isPreviewOpen = !s.isPreviewOpen }),
   }))
 )

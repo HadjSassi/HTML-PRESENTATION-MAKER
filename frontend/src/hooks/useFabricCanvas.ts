@@ -9,7 +9,7 @@ export function useFabricCanvas(
   elRef: RefObject<HTMLCanvasElement | null>
 ): RefObject<fabric.Canvas | null> {
   const fabricRef = useRef<fabric.Canvas | null>(null)
-  const { presentation, currentSlideIndex, updateCanvas, setSelectedObjectId } =
+  const { presentation, currentSlideIndex, updateCanvas, setSelectedObjectId, setLastSelectedTextColor } =
     usePresentationStore()
 
   // Init canvas once
@@ -35,10 +35,16 @@ export function useFabricCanvas(
     canvas.on('selection:created', (e) => {
       const obj = e.selected?.[0] as fabric.Object & { id?: string }
       setSelectedObjectId(obj?.id ?? obj?.type ?? null)
+      if (obj?.type === 'i-text' && typeof (obj as fabric.IText).fill === 'string') {
+        setLastSelectedTextColor((obj as fabric.IText).fill as string)
+      }
     })
     canvas.on('selection:updated', (e) => {
       const obj = e.selected?.[0] as fabric.Object & { id?: string }
       setSelectedObjectId(obj?.id ?? obj?.type ?? null)
+      if (obj?.type === 'i-text' && typeof (obj as fabric.IText).fill === 'string') {
+        setLastSelectedTextColor((obj as fabric.IText).fill as string)
+      }
     })
     canvas.on('selection:cleared', () => setSelectedObjectId(null))
 

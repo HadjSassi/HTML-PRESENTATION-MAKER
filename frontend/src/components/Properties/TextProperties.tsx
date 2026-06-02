@@ -3,10 +3,12 @@ import { ColorPicker } from '../UI/ColorPicker'
 import { Select } from '../UI/Select'
 import { NumberInput } from '../UI/Input'
 import { FONT_FAMILIES, FONT_SIZES, TEXT_ALIGNS } from '../../utils/constants'
+import { usePresentationStore } from '../../store/usePresentationStore'
 
 interface Props { obj: fabric.IText; canvas: fabric.Canvas }
 
 export function TextProperties({ obj, canvas }: Props) {
+  const { setLastSelectedTextColor } = usePresentationStore()
   const update = (props: Partial<fabric.IText>) => {
     obj.set(props)
     canvas.renderAll()
@@ -25,8 +27,14 @@ export function TextProperties({ obj, canvas }: Props) {
           <Select label="Font Size" value={String(obj.fontSize ?? 24)}
             onChange={(v) => update({ fontSize: Number(v) })}
             options={FONT_SIZES.map((s) => ({ value: String(s), label: `${s}px` }))} />
-          <ColorPicker label="Color" value={(obj.fill as string) ?? '#ffffff'}
-            onChange={(v) => update({ fill: v })} />
+          <ColorPicker
+            label="Color"
+            value={(obj.fill as string) ?? '#ffffff'}
+            onChange={(v) => {
+              update({ fill: v })
+              setLastSelectedTextColor(v)
+            }}
+          />
           <Select label="Align" value={obj.textAlign ?? 'left'}
             onChange={(v) => update({ textAlign: v as any })}
             options={TEXT_ALIGNS.map((a) => ({ value: a, label: a.charAt(0).toUpperCase() + a.slice(1) }))} />

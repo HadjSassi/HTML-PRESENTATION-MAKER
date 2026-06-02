@@ -3,10 +3,14 @@ import { Type, Image, Video, Square, Minus, AlignLeft } from 'lucide-react'
 import { useCanvasCtx } from '../../contexts/CanvasContext'
 import { fabric } from 'fabric'
 import { fileToDataUrl } from '../../utils/fileUtils'
+import { inverseHexColor } from '../../utils/colorUtils'
+import { usePresentationStore } from '../../store/usePresentationStore'
 
 function addText(canvas: fabric.Canvas) {
+  const bg = typeof canvas.backgroundColor === 'string' ? canvas.backgroundColor : '#ffffff'
+  const saved = usePresentationStore.getState().lastSelectedTextColor
   const text = new fabric.IText('Double-click to edit', {
-    left: 100, top: 100, fontSize: 32, fill: '#ffffff',
+    left: 100, top: 100, fontSize: 32, fill: saved ?? inverseHexColor(bg),
     fontFamily: 'Arial', id: uuid(),
   } as fabric.ITextOptions & { id: string })
   canvas.add(text)
