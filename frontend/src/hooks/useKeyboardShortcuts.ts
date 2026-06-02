@@ -59,4 +59,3 @@ export function useKeyboardShortcuts() {
     return () => window.removeEventListener('keydown', handler)
   }, [canvasRef])
 }
-

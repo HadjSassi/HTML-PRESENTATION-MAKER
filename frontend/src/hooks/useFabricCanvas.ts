@@ -14,9 +14,6 @@ export function useFabricCanvas(
   const polyPoints = useRef<fabric.Point[]>([])
   const polyGuides = useRef<fabric.Object[]>([])
   const polyLiveLine = useRef<fabric.Line | null>(null)
-  const undoStack = useRef<string[]>([])
-  const redoStack = useRef<string[]>([])
-  const isApplyingHistory = useRef(false)
   const isLoadingSlide = useRef(false)
   const {
     presentation,
@@ -54,39 +51,9 @@ export function useFabricCanvas(
       const thumb = canvas.toDataURL({ format: 'png', quality: 0.4, multiplier: 0.25 })
       updateCanvas(usePresentationStore.getState().currentSlideIndex, json, thumb)
     }
-    const pushHistory = (json: string) => {
-      if (isApplyingHistory.current || isLoadingSlide.current) return
-      if (undoStack.current[undoStack.current.length - 1] === json) return
-      undoStack.current.push(json)
-      if (undoStack.current.length > 100) undoStack.current.shift()
-      redoStack.current = []
-    }
-    const applySnapshot = (json: string) => {
-      isApplyingHistory.current = true
-      canvas.loadFromJSON(json, () => {
-        canvas.renderAll()
-        persist()
-        isApplyingHistory.current = false
-      })
-    }
-    ;(canvas as any).hpmUndo = () => {
-      if (undoStack.current.length < 2) return
-      const current = undoStack.current.pop()
-      if (current) redoStack.current.push(current)
-      const prev = undoStack.current[undoStack.current.length - 1]
-      if (prev) applySnapshot(prev)
-    }
-    ;(canvas as any).hpmRedo = () => {
-      const next = redoStack.current.pop()
-      if (!next) return
-      undoStack.current.push(next)
-      applySnapshot(next)
-    }
 
     const sync = (evt?: fabric.IEvent) => {
       if ((evt?.target as any)?.customType === 'shape-guide') return
-      const json = snapshot()
-      pushHistory(json)
       persist()
     }
     canvas.on('object:modified', sync)
@@ -123,8 +90,6 @@ export function useFabricCanvas(
       }
     })
     canvas.on('selection:cleared', () => setSelectedObjectId(null))
-    undoStack.current = [snapshot()]
-    redoStack.current = []
 
     return () => { canvas.dispose(); fabricRef.current = null }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -308,14 +273,11 @@ export function useFabricCanvas(
         canvas.backgroundColor = slide.backgroundColor
         canvas.renderAll()
       }
-      const json = JSON.stringify(canvas.toJSON(SERIALIZE_PROPS))
-      undoStack.current = [json]
-      redoStack.current = []
       isLoadingSlide.current = false
     }
     load()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSlideIndex])
+  }, [currentSlideIndex, presentation.slides[currentSlideIndex]?.canvasJson])
 
   return fabricRef
 }

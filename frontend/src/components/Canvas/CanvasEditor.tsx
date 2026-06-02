@@ -44,14 +44,45 @@ export function CanvasEditor() {
     canvas.renderAll()
   }, [slide?.backgroundColor])
 
-  const handleZoom = (z: number) => {
+  const handleZoom = (z: number, point?: { x: number; y: number }) => {
     const canvas = fabricRef.current
     if (!canvas) return
-    const clamped = Math.max(0.2, Math.min(2, z))
+    const clamped = Math.max(0.2, Math.min(3, z))
     zoomRef.current = clamped
-    canvas.setZoom(clamped)
-    canvas.setDimensions({ width: CANVAS_W * clamped, height: CANVAS_H * clamped })
+    if (point) {
+      canvas.zoomToPoint(point, clamped)
+    } else {
+      canvas.setZoom(clamped)
+    }
   }
+
+  useEffect(() => {
+    const canvas = fabricRef.current
+    if (!canvas) return
+
+    const onWheel = (e: fabric.IEvent<WheelEvent>) => {
+      e.e.preventDefault()
+      e.e.stopPropagation()
+
+      if (e.e.ctrlKey) {
+        const delta = e.e.deltaY
+        const newZoom = zoomRef.current * (1 - delta / 1000)
+        handleZoom(newZoom, { x: e.e.offsetX, y: e.e.offsetY })
+      } else {
+        const vpt = canvas.viewportTransform
+        if (vpt) {
+          vpt[4] -= e.e.deltaX
+          vpt[5] -= e.e.deltaY
+          canvas.requestRenderAll()
+        }
+      }
+    }
+
+    canvas.on('mouse:wheel', onWheel)
+    return () => {
+      canvas.off('mouse:wheel', onWheel)
+    }
+  }, [fabricRef.current])
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-base overflow-auto p-8 gap-4">
@@ -75,9 +106,9 @@ export function CanvasEditor() {
         <div className="flex items-center gap-2 text-xs text-textMuted">
           <span>{CANVAS_W} × {CANVAS_H}px</span>
         </div>
-        <ZoomControls zoom={zoomRef.current} onZoom={handleZoom} />
+        <ZoomControls zoom={zoomRef.current} onZoom={(z) => handleZoom(z)} />
         <div className="text-xs text-textMuted">
-          Click to select · Del remove · Ctrl+Z undo · Ctrl+Y redo
+          Scroll to pan · Ctrl+Scroll to zoom
         </div>
       </div>
     </div>

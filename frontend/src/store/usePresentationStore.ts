@@ -52,6 +52,13 @@ interface Store {
   updateObject: (props: any) => void
 }
 
+const renumberSlides = (slides: Slide[]) => {
+  return slides.map((slide, index) => ({
+    ...slide,
+    title: slide.title.match(/^Slide \d+$/) ? `Slide ${index + 1}` : slide.title,
+  }))
+}
+
 export const usePresentationStore = create<Store>()(
   immer((set) => ({
     presentation: newPresentation(),
@@ -75,18 +82,21 @@ export const usePresentationStore = create<Store>()(
     duplicateSlide: (idx) => set((s) => {
       const copy = { ...s.presentation.slides[idx], id: uuid() }
       s.presentation.slides.splice(idx + 1, 0, copy)
+      s.presentation.slides = renumberSlides(s.presentation.slides)
       s.currentSlideIndex = idx + 1; s.isDirty = true
     }),
     deleteSlide: (id) => set((s) => {
       if (s.presentation.slides.length <= 1) return
       const idx = s.presentation.slides.findIndex((sl) => sl.id === id)
       s.presentation.slides.splice(idx, 1)
+      s.presentation.slides = renumberSlides(s.presentation.slides)
       s.currentSlideIndex = Math.min(s.currentSlideIndex, s.presentation.slides.length - 1)
       s.selectedObjectId = null; s.isDirty = true
     }),
     moveSlide: (from, to) => set((s) => {
       const [sl] = s.presentation.slides.splice(from, 1)
       s.presentation.slides.splice(to, 0, sl)
+      s.presentation.slides = renumberSlides(s.presentation.slides)
       s.currentSlideIndex = to; s.isDirty = true
     }),
     selectSlide: (idx) => set((s) => { s.currentSlideIndex = idx; s.selectedObjectId = null }),
