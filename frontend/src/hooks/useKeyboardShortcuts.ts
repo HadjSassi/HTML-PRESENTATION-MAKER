@@ -1,10 +1,15 @@
 import { useEffect } from 'react'
 import { useCanvasCtx } from '../contexts/CanvasContext'
-import { usePresentationStore } from '../store/usePresentationStore'
+import {
+  deleteActiveObject,
+  duplicateActiveObject,
+  redoCanvas,
+  selectAllObjects,
+  undoCanvas,
+} from './useCanvasActions'
 
 export function useKeyboardShortcuts() {
   const { canvasRef } = useCanvasCtx()
-  const { deleteSlide, presentation, currentSlideIndex } = usePresentationStore()
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -18,35 +23,30 @@ export function useKeyboardShortcuts() {
       ) return
 
       if (e.key === 'Delete' || e.key === 'Backspace') {
-        const active = canvas.getActiveObject()
-        if (active) {
-          canvas.remove(active)
-          canvas.discardActiveObject()
-          canvas.renderAll()
-        }
+        deleteActiveObject(canvas)
       }
 
       if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
         e.preventDefault()
-        canvas.discardActiveObject()
-        const sel = new (window as any).fabric.ActiveSelection(
-          canvas.getObjects(), { canvas }
-        )
-        canvas.setActiveObject(sel)
-        canvas.renderAll()
+        selectAllObjects(canvas)
       }
 
       if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
         e.preventDefault()
-        const active = canvas.getActiveObject() as any
-        if (active) {
-          active.clone((cloned: any) => {
-            cloned.set({ left: active.left + 20, top: active.top + 20 })
-            canvas.add(cloned)
-            canvas.setActiveObject(cloned)
-            canvas.renderAll()
-          })
-        }
+        duplicateActiveObject(canvas)
+      }
+
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z') {
+        e.preventDefault()
+        undoCanvas(canvas)
+      }
+
+      if (
+        ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') ||
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')
+      ) {
+        e.preventDefault()
+        redoCanvas(canvas)
       }
 
       if (e.key === 'Escape') {
@@ -57,6 +57,6 @@ export function useKeyboardShortcuts() {
 
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [canvasRef, deleteSlide, presentation, currentSlideIndex])
+  }, [canvasRef])
 }
 

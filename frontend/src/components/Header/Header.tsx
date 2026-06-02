@@ -1,14 +1,17 @@
 import { useRef } from 'react'
-import { Eye, Save, Download, Upload, Plus, RotateCcw } from 'lucide-react'
+import { Eye, Save, Download, Upload, RotateCcw, Settings } from 'lucide-react'
 import { usePresentationStore } from '../../store/usePresentationStore'
 import { Button } from '../UI/Button'
 import { exportHpm, importHpm } from '../../utils/fileUtils'
 import { APP_NAME, APP_AUTHOR } from '../../utils/constants'
+import { SettingsModal } from './SettingsModal'
+import { useState } from 'react'
 
 export function Header() {
   const { presentation, isDirty, setPresentationInfo, togglePreview, reset } =
     usePresentationStore()
   const importRef = useRef<HTMLInputElement>(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const load = usePresentationStore((s) => s.load)
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +77,13 @@ export function Header() {
           onClick={togglePreview}>
           Preview
         </Button>
+
+        <Button variant="ghost" size="sm" icon={<Settings size={14} />}
+          onClick={() => setSettingsOpen(true)}>
+          Settings
+        </Button>
       </div>
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </header>
   )
 }

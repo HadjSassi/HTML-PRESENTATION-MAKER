@@ -3,6 +3,8 @@ import { useCanvasCtx } from '../../contexts/CanvasContext'
 import { SlideProperties } from './SlideProperties'
 import { TextProperties } from './TextProperties'
 import { ImageProperties, VideoProperties } from './ImageProperties'
+import { ShapeProperties } from './ShapeProperties'
+import { ObjectArrangeProperties } from './ObjectArrangeProperties'
 import { fabric } from 'fabric'
 
 function NoSelection() {
@@ -35,25 +37,32 @@ export function PropertiesPanel() {
     const customType = (active as any).customType
 
     if (type === 'i-text' || type === 'text') {
-      content = <TextProperties obj={active as fabric.IText} canvas={canvas!} />
-    } else if (type === 'image') {
-      content = <ImageProperties obj={active as fabric.Image} canvas={canvas!} />
-    } else if (customType === 'video') {
-      content = <VideoProperties obj={active} canvas={canvas!} />
-    } else {
-      // Generic object (rect, line, circle…)
       content = (
-        <div className="p-4 flex flex-col gap-4">
-          <h3 className="text-xs font-semibold text-textSecondary uppercase tracking-wider">
-            Shape — {type}
-          </h3>
-          <div className="grid grid-cols-2 gap-2 text-xs text-textMuted">
-            <span>X: {Math.round((active as any).left ?? 0)}</span>
-            <span>Y: {Math.round((active as any).top ?? 0)}</span>
-            <span>W: {Math.round((active as any).width ?? 0)}</span>
-            <span>H: {Math.round((active as any).height ?? 0)}</span>
-          </div>
-        </div>
+        <>
+          <TextProperties obj={active as fabric.IText} canvas={canvas!} />
+          <ObjectArrangeProperties canvas={canvas!} />
+        </>
+      )
+    } else if (type === 'image') {
+      content = (
+        <>
+          <ImageProperties obj={active as fabric.Image} canvas={canvas!} />
+          <ObjectArrangeProperties canvas={canvas!} />
+        </>
+      )
+    } else if (customType === 'video') {
+      content = (
+        <>
+          <VideoProperties obj={active} canvas={canvas!} />
+          <ObjectArrangeProperties canvas={canvas!} />
+        </>
+      )
+    } else {
+      content = (
+        <>
+          <ShapeProperties obj={active as fabric.Object} canvas={canvas!} />
+          <ObjectArrangeProperties canvas={canvas!} />
+        </>
       )
     }
   }

@@ -40,12 +40,21 @@ make down      # Clean up
 ```
 Access at: **http://localhost**
 
+### **Docker Dev (Live Reload)**
+```bash
+make run-dev    # Start containers with live reload (frontend + backend)
+make logs-dev   # Follow dev logs
+make stop-dev   # Stop dev stack
+```
+Use this mode while coding: code changes appear without `make down && make install && make run`.
+
 ## 🛠 Make Commands
 
 ```makefile
 make install install-frontend install-backend  # Set up
 make dev                                        # Dev with HMR
 make run stop down ps                           # Docker
+make run-dev stop-dev logs-dev                  # Docker live reload
 make cli logs                                   # Debug
 make prettier                                   # Format code
 ```

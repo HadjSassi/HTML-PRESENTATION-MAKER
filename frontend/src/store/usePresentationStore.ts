@@ -2,6 +2,14 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { v4 as uuid } from 'uuid'
 import type { Presentation, Slide, Animation } from '../types'
+import type { ShapeStyle, ShapeDrawMode } from '../types'
+
+const defaultShapeStyle: ShapeStyle = {
+  fill: '#8b5cf6',
+  stroke: '#4c1d95',
+  strokeWidth: 2,
+  opacity: 1,
+}
 
 const newSlide = (n: number): Slide => ({
   id: uuid(), title: `Slide ${n}`, backgroundColor: '#FFFFFF',
@@ -19,6 +27,8 @@ interface Store {
   currentSlideIndex: number
   selectedObjectId: string | null
   lastSelectedTextColor: string | null
+  shapeStyle: ShapeStyle
+  shapeDrawMode: ShapeDrawMode
   isPreviewOpen: boolean
   isDirty: boolean
   // Actions
@@ -36,6 +46,8 @@ interface Store {
   updateSlideTitle: (idx: number, title: string) => void
   setSelectedObjectId: (id: string | null) => void
   setLastSelectedTextColor: (color: string) => void
+  setShapeStyle: (style: Partial<ShapeStyle>) => void
+  setShapeDrawMode: (mode: ShapeDrawMode) => void
   togglePreview: () => void
 }
 
@@ -45,11 +57,13 @@ export const usePresentationStore = create<Store>()(
     currentSlideIndex: 0,
     selectedObjectId: null,
     lastSelectedTextColor: null,
+    shapeStyle: defaultShapeStyle,
+    shapeDrawMode: 'none',
     isPreviewOpen: false,
     isDirty: false,
 
-    reset: () => set((s) => { s.presentation = newPresentation(); s.currentSlideIndex = 0; s.selectedObjectId = null; s.lastSelectedTextColor = null; s.isDirty = false }),
-    load: (p) => set((s) => { s.presentation = p; s.currentSlideIndex = 0; s.selectedObjectId = null; s.lastSelectedTextColor = null; s.isDirty = false }),
+    reset: () => set((s) => { s.presentation = newPresentation(); s.currentSlideIndex = 0; s.selectedObjectId = null; s.lastSelectedTextColor = null; s.shapeStyle = defaultShapeStyle; s.shapeDrawMode = 'none'; s.isDirty = false }),
+    load: (p) => set((s) => { s.presentation = p; s.currentSlideIndex = 0; s.selectedObjectId = null; s.lastSelectedTextColor = null; s.shapeStyle = defaultShapeStyle; s.shapeDrawMode = 'none'; s.isDirty = false }),
     setPresentationInfo: (info) => set((s) => { Object.assign(s.presentation, info); s.isDirty = true }),
 
     addSlide: () => set((s) => {
@@ -88,6 +102,8 @@ export const usePresentationStore = create<Store>()(
 
     setSelectedObjectId: (id) => set((s) => { s.selectedObjectId = id }),
     setLastSelectedTextColor: (color) => set((s) => { s.lastSelectedTextColor = color }),
+    setShapeStyle: (style) => set((s) => { s.shapeStyle = { ...s.shapeStyle, ...style } }),
+    setShapeDrawMode: (mode) => set((s) => { s.shapeDrawMode = mode }),
     togglePreview: () => set((s) => { s.isPreviewOpen = !s.isPreviewOpen }),
   }))
 )

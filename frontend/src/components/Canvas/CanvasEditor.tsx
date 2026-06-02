@@ -74,7 +74,7 @@ export function CanvasEditor() {
         </div>
         <ZoomControls zoom={zoomRef.current} onZoom={handleZoom} />
         <div className="text-xs text-textMuted">
-          Click to select · Del to remove · Ctrl+D duplicate
+          Click to select · Del remove · Ctrl+Z undo · Ctrl+Y redo
         </div>
       </div>
     </div>

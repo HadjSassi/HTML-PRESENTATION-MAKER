@@ -1,6 +1,7 @@
-.PHONY: install install-frontend install-backend run stop down ps cli prettier logs dev
+.PHONY: install install-frontend install-backend run run-dev stop stop-dev down ps cli prettier logs logs-dev dev
 
 COMPOSE = cd docker-base && docker compose
+COMPOSE_DEV = cd docker-base && docker compose -f docker-compose.yml -f docker-compose.dev.yml
 
 # ── Local dev ──────────────────────────────────────────────────────
 install: install-frontend install-backend
@@ -21,8 +22,14 @@ dev:
 run:
 	$(COMPOSE) up -d --build
 
+run-dev:
+	$(COMPOSE_DEV) up -d --build
+
 stop:
 	$(COMPOSE) stop
+
+stop-dev:
+	$(COMPOSE_DEV) stop
 
 down:
 	$(COMPOSE) down -v
@@ -35,6 +42,9 @@ cli:
 
 logs:
 	$(COMPOSE) logs -f
+
+logs-dev:
+	$(COMPOSE_DEV) logs -f
 
 # ── Code quality ───────────────────────────────────────────────────
 prettier:

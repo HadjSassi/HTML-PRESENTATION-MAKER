@@ -10,6 +10,15 @@ export interface Animation {
   duration: number
 }
 
+export interface ShapeStyle {
+  fill: string
+  stroke: string
+  strokeWidth: number
+  opacity: number
+}
+
+export type ShapeDrawMode = 'none' | 'free' | 'polygon'
+
 export interface Slide {
   id: string
   title: string
