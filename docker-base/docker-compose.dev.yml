@@ -2,18 +2,56 @@ version: "3.9"
 
 services:
   frontend:
-    image: node:20-alpine
-    working_dir: /app
+    build:
+      context: ..
+      dockerfile: Dockerfile.frontend
+    container_name: hpm_frontend_dev
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 3000"
     volumes:
       - ../frontend:/app
+    networks:
+      - hpm_net
     environment:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
 
   backend:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: hpm_backend_dev
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - ../core:/app
       - hpm_data:/data
+    networks:
+      - hpm_net
+    environment:
+      - PYTHONUNBUFFERED=1
 
+  caddy:
+    image: caddy:2-alpine
+    container_name: hpm_caddy_dev
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - hpm_net
+
+networks:
+  hpm_net:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
+  hpm_data:
