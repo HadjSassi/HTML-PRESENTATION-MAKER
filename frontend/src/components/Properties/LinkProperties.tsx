@@ -16,7 +16,8 @@ export function LinkProperties({ obj, canvas }: LinkPropertiesProps) {
 
   const setLinkedSlideId = (slideId: string) => {
     // Directly set the property on the object
-    obj.set('linkedSlideId', slideId || undefined)
+    // @ts-ignore
+      obj.set('linkedSlideId', slideId || undefined)
     // Manually fire the modified event to trigger a save
     canvas.fire('object:modified', { target: obj })
     canvas.renderAll()

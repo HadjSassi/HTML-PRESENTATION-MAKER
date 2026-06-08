@@ -80,6 +80,7 @@ export function CanvasEditor() {
 
     canvas.on('mouse:wheel', onWheel)
     return () => {
+      // @ts-ignore
       canvas.off('mouse:wheel', onWheel)
     }
   }, [fabricRef.current])
