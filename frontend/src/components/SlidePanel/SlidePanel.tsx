@@ -1,14 +1,19 @@
-import { Plus } from 'lucide-react'
-import { usePresentationStore } from '../../store/usePresentationStore'
-import { SlideThumbnail } from './SlideThumbnail'
+import { Plus } from "lucide-react";
+import { usePresentationStore } from "../../store/usePresentationStore";
+import { SlideThumbnail } from "./SlideThumbnail";
 
 export function SlidePanel() {
   const {
-    presentation, currentSlideIndex,
-    selectSlide, addSlide, duplicateSlide, deleteSlide, moveSlide,
-  } = usePresentationStore()
+    presentation,
+    currentSlideIndex,
+    selectSlide,
+    addSlide,
+    duplicateSlide,
+    deleteSlide,
+    moveSlide,
+  } = usePresentationStore();
 
-  const { slides } = presentation
+  const { slides } = presentation;
 
   return (
     <aside className="w-48 shrink-0 bg-panel border-r border-border flex flex-col overflow-hidden">
@@ -60,6 +65,5 @@ export function SlidePanel() {
         </button>
       </div>
     </aside>
-  )
+  );
 }
-

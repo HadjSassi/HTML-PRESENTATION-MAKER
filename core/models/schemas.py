@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
 from typing import List, Optional
 from uuid import uuid4
+
+from pydantic import BaseModel, Field
 
 
 class Animation(BaseModel):
@@ -35,4 +36,3 @@ class SaveRequest(BaseModel):
 
 class LoadRequest(BaseModel):
     path: str
-

@@ -1,6 +1,7 @@
 import json
 import os
 from typing import Optional
+
 from models.schemas import Presentation
 
 HPM_EXT = ".hpm"
@@ -32,4 +33,3 @@ class FileService:
     @staticmethod
     def from_bytes(data: bytes) -> Presentation:
         return Presentation(**json.loads(data.decode("utf-8")))
-

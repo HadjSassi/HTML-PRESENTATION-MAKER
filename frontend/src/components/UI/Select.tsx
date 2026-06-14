@@ -1,14 +1,18 @@
 interface SelectProps {
-  label?: string
-  value: string
-  onChange: (v: string) => void
-  options: { value: string; label: string }[]
+  label?: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: { value: string; label: string }[];
 }
 
 export function Select({ label, value, onChange, options }: SelectProps) {
   return (
     <div className="flex flex-col gap-1 w-full">
-      {label && <label className="text-xs text-textSecondary font-medium">{label}</label>}
+      {label && (
+        <label className="text-xs text-textSecondary font-medium">
+          {label}
+        </label>
+      )}
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -17,37 +21,51 @@ export function Select({ label, value, onChange, options }: SelectProps) {
           focus:ring-accent/30 transition-colors cursor-pointer"
       >
         {options.map((o) => (
-          <option key={o.value} value={o.value}>{o.label}</option>
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
         ))}
       </select>
     </div>
-  )
+  );
 }
 
 interface SliderProps {
-  label?: string
-  value: number
-  onChange: (v: number) => void
-  min?: number
-  max?: number
-  step?: number
+  label?: string;
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
 }
 
-export function Slider({ label, value, onChange, min = 0, max = 100, step = 1 }: SliderProps) {
+export function Slider({
+  label,
+  value,
+  onChange,
+  min = 0,
+  max = 100,
+  step = 1,
+}: SliderProps) {
   return (
     <div className="flex flex-col gap-1 w-full">
       {label && (
         <div className="flex justify-between">
-          <label className="text-xs text-textSecondary font-medium">{label}</label>
+          <label className="text-xs text-textSecondary font-medium">
+            {label}
+          </label>
           <span className="text-xs text-textMuted">{value}</span>
         </div>
       )}
       <input
-        type="range" value={value} min={min} max={max} step={step}
+        type="range"
+        value={value}
+        min={min}
+        max={max}
+        step={step}
         onChange={(e) => onChange(Number(e.target.value))}
         className="w-full accent-accent"
       />
     </div>
-  )
+  );
 }
-

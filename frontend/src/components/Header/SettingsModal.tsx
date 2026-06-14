@@ -1,27 +1,32 @@
-import { Modal } from '../UI/Modal'
-import { useSettingsStore } from '../../store/useSettingsStore'
+import { Modal } from "../UI/Modal";
+import { useSettingsStore } from "../../store/useSettingsStore";
 
 interface Props {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 export function SettingsModal({ open, onClose }: Props) {
-  const { theme, setTheme, showRulers, toggleRulers, snapToGrid, toggleSnap } = useSettingsStore()
+  const { theme, setTheme, showRulers, toggleRulers, snapToGrid, toggleSnap } =
+    useSettingsStore();
 
   return (
     <Modal open={open} title="Settings" onClose={onClose}>
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <label className="text-xs text-textSecondary font-medium">Display Mode</label>
+          <label className="text-xs text-textSecondary font-medium">
+            Display Mode
+          </label>
           <div className="flex gap-2">
-            {(['dark', 'light'] as const).map((m) => (
+            {(["dark", "light"] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => setTheme(m)}
-                className={`px-3 py-1.5 rounded text-xs border ${theme === m
-                  ? 'bg-accent/15 border-accent text-accent'
-                  : 'bg-card border-border text-textSecondary hover:text-textPrimary'}`}
+                className={`px-3 py-1.5 rounded text-xs border ${
+                  theme === m
+                    ? "bg-accent/15 border-accent text-accent"
+                    : "bg-card border-border text-textSecondary hover:text-textPrimary"
+                }`}
               >
                 {m[0].toUpperCase() + m.slice(1)}
               </button>
@@ -42,6 +47,5 @@ export function SettingsModal({ open, onClose }: Props) {
         </label>
       </div>
     </Modal>
-  )
+  );
 }
-

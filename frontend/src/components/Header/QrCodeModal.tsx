@@ -1,13 +1,13 @@
-import { Modal } from '../UI/Modal'
-import { QRCodeCanvas } from 'qrcode.react'
+import { Modal } from "../UI/Modal";
+import { QRCodeCanvas } from "qrcode.react";
 
 interface QrCodeModalProps {
-  open: boolean
-  onClose: () => void
+  open: boolean;
+  onClose: () => void;
 }
 
 export function QrCodeModal({ open, onClose }: QrCodeModalProps) {
-  const url = `${window.location.origin}/`
+  const url = `${window.location.origin}/`;
 
   return (
     <Modal open={open} onClose={onClose} title="Scan QR Code to Join">
@@ -19,9 +19,17 @@ export function QrCodeModal({ open, onClose }: QrCodeModalProps) {
           Scan this code with your phone to view the presentation.
         </p>
         <p className="mt-2 text-center text-textMuted text-xs">
-          Or open this link: <a href={url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">{url}</a>
+          Or open this link:{" "}
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            {url}
+          </a>
         </p>
       </div>
     </Modal>
-  )
+  );
 }

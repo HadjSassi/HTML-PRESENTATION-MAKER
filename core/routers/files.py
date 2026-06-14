@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
-from models.schemas import SaveRequest, LoadRequest
+
+from models.schemas import LoadRequest, SaveRequest
 from services.file_service import FileService
 
 router = APIRouter(prefix="/api/files", tags=["files"])
@@ -29,4 +30,3 @@ async def load_presentation(req: LoadRequest):
 @router.get("/health")
 async def health():
     return {"status": "ok"}
-

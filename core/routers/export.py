@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
+
 from models.schemas import Presentation
 from services.export_service import ExportService
 
@@ -21,4 +22,3 @@ async def export_html(presentation: Presentation):
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
-

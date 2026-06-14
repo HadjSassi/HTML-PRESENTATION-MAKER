@@ -1,34 +1,35 @@
-import { type ButtonHTMLAttributes } from 'react'
+import { type ButtonHTMLAttributes } from "react";
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success'
-type Size = 'sm' | 'md' | 'lg'
+type Variant = "primary" | "secondary" | "ghost" | "danger" | "success";
+type Size = "sm" | "md" | "lg";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: Variant
-  size?: Size
-  icon?: React.ReactNode
+  variant?: Variant;
+  size?: Size;
+  icon?: React.ReactNode;
 }
 
 const variants: Record<Variant, string> = {
-  primary:   'bg-accent hover:bg-accentDark text-white border-transparent',
-  secondary: 'bg-card hover:bg-hover text-textPrimary border-border',
-  ghost:     'bg-transparent hover:bg-hover text-textSecondary hover:text-textPrimary border-transparent',
-  danger:    'bg-danger/10 hover:bg-danger/20 text-danger border-danger/30',
-  success:   'bg-success/10 hover:bg-success/20 text-success border-success/30',
-}
+  primary: "bg-accent hover:bg-accentDark text-white border-transparent",
+  secondary: "bg-card hover:bg-hover text-textPrimary border-border",
+  ghost:
+    "bg-transparent hover:bg-hover text-textSecondary hover:text-textPrimary border-transparent",
+  danger: "bg-danger/10 hover:bg-danger/20 text-danger border-danger/30",
+  success: "bg-success/10 hover:bg-success/20 text-success border-success/30",
+};
 
 const sizes: Record<Size, string> = {
-  sm: 'px-2.5 py-1 text-xs gap-1',
-  md: 'px-3 py-1.5 text-sm gap-1.5',
-  lg: 'px-4 py-2 text-base gap-2',
-}
+  sm: "px-2.5 py-1 text-xs gap-1",
+  md: "px-3 py-1.5 text-sm gap-1.5",
+  lg: "px-4 py-2 text-base gap-2",
+};
 
 export function Button({
-  variant = 'secondary',
-  size = 'md',
+  variant = "secondary",
+  size = "md",
   icon,
   children,
-  className = '',
+  className = "",
   ...props
 }: ButtonProps) {
   return (
@@ -42,6 +43,5 @@ export function Button({
       {icon && <span className="shrink-0">{icon}</span>}
       {children}
     </button>
-  )
+  );
 }
-

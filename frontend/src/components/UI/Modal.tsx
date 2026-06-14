@@ -1,14 +1,14 @@
-import { X } from 'lucide-react'
+import { X } from "lucide-react";
 
 interface Props {
-  open: boolean
-  title: string
-  onClose: () => void
-  children: React.ReactNode
+  open: boolean;
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
 }
 
 export function Modal({ open, title, onClose, children }: Props) {
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -25,6 +25,5 @@ export function Modal({ open, title, onClose, children }: Props) {
         <div className="p-4">{children}</div>
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,4 +1,5 @@
 import json
+
 from models.schemas import Presentation
 
 _CSS_KEYFRAMES = """
@@ -94,4 +95,3 @@ document.addEventListener('keydown',function(e){{
 }});
 showSlide(0,1);
 </script></body></html>"""
-

@@ -1,27 +1,27 @@
-import { usePresentationStore } from '../../store/usePresentationStore'
-import { fabric } from 'fabric'
+import { usePresentationStore } from "../../store/usePresentationStore";
+import { fabric } from "fabric";
 
 interface LinkPropertiesProps {
-  obj: fabric.Object
-  canvas: fabric.Canvas
+  obj: fabric.Object;
+  canvas: fabric.Canvas;
 }
 
 export function LinkProperties({ obj, canvas }: LinkPropertiesProps) {
-  const { presentation } = usePresentationStore()
-  const slides = presentation.slides
+  const { presentation } = usePresentationStore();
+  const slides = presentation.slides;
 
   const getLinkedSlideId = () => {
-    return (obj as any).linkedSlideId || ''
-  }
+    return (obj as any).linkedSlideId || "";
+  };
 
   const setLinkedSlideId = (slideId: string) => {
     // Directly set the property on the object
     // @ts-ignore
-      obj.set('linkedSlideId', slideId || undefined)
+    obj.set("linkedSlideId", slideId || undefined);
     // Manually fire the modified event to trigger a save
-    canvas.fire('object:modified', { target: obj })
-    canvas.renderAll()
-  }
+    canvas.fire("object:modified", { target: obj });
+    canvas.renderAll();
+  };
 
   return (
     <div className="px-4 py-3">
@@ -39,5 +39,5 @@ export function LinkProperties({ obj, canvas }: LinkPropertiesProps) {
         ))}
       </select>
     </div>
-  )
+  );
 }

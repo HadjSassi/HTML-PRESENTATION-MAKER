@@ -1,20 +1,27 @@
-import { useEffect, useRef, type RefObject } from 'react'
-import { fabric } from 'fabric'
-import { v4 as uuid } from 'uuid'
-import { usePresentationStore } from '../store/usePresentationStore'
+import { useEffect, useRef, type RefObject } from "react";
+import { fabric } from "fabric";
+import { v4 as uuid } from "uuid";
+import { usePresentationStore } from "../store/usePresentationStore";
 
-const CANVAS_W = 960
-const CANVAS_H = 540
-const SERIALIZE_PROPS = ['id', 'customType', 'videoSrc', 'videoType', 'shapeType', 'linkedSlideId']
+const CANVAS_W = 960;
+const CANVAS_H = 540;
+const SERIALIZE_PROPS = [
+  "id",
+  "customType",
+  "videoSrc",
+  "videoType",
+  "shapeType",
+  "linkedSlideId",
+];
 
 export function useFabricCanvas(
-  elRef: RefObject<HTMLCanvasElement | null>
+  elRef: RefObject<HTMLCanvasElement | null>,
 ): RefObject<fabric.Canvas | null> {
-  const fabricRef = useRef<fabric.Canvas | null>(null)
-  const polyPoints = useRef<fabric.Point[]>([])
-  const polyGuides = useRef<fabric.Object[]>([])
-  const polyLiveLine = useRef<fabric.Line | null>(null)
-  const isLoadingSlide = useRef(false)
+  const fabricRef = useRef<fabric.Canvas | null>(null);
+  const polyPoints = useRef<fabric.Point[]>([]);
+  const polyGuides = useRef<fabric.Object[]>([]);
+  const polyLiveLine = useRef<fabric.Line | null>(null);
+  const isLoadingSlide = useRef(false);
   const {
     presentation,
     currentSlideIndex,
@@ -25,158 +32,185 @@ export function useFabricCanvas(
     shapeStyle,
     setShapeStyle,
     setShapeDrawMode,
-  } =
-    usePresentationStore()
+  } = usePresentationStore();
 
   const isShapeObject = (obj: fabric.Object | undefined) => {
-    if (!obj) return false
-    const customType = (obj as any).customType
-    if (customType === 'shape') return true
-    return ['rect', 'line', 'circle', 'ellipse', 'triangle', 'polygon', 'path'].includes(obj.type ?? '')
-  }
+    if (!obj) return false;
+    const customType = (obj as any).customType;
+    if (customType === "shape") return true;
+    return [
+      "rect",
+      "line",
+      "circle",
+      "ellipse",
+      "triangle",
+      "polygon",
+      "path",
+    ].includes(obj.type ?? "");
+  };
 
   // Init canvas once
   useEffect(() => {
-    if (!elRef.current || fabricRef.current) return
+    if (!elRef.current || fabricRef.current) return;
     const canvas = new fabric.Canvas(elRef.current, {
-      width: CANVAS_W, height: CANVAS_H,
-      backgroundColor: '#ffffff',
+      width: CANVAS_W,
+      height: CANVAS_H,
+      backgroundColor: "#ffffff",
       preserveObjectStacking: true,
-    })
-    fabricRef.current = canvas
+    });
+    fabricRef.current = canvas;
 
-    const snapshot = () => JSON.stringify(canvas.toJSON(SERIALIZE_PROPS))
+    const snapshot = () => JSON.stringify(canvas.toJSON(SERIALIZE_PROPS));
     const persist = () => {
-      const json = snapshot()
-      const thumb = canvas.toDataURL({ format: 'png', quality: 0.4, multiplier: 0.25 })
-      updateCanvas(usePresentationStore.getState().currentSlideIndex, json, thumb)
-    }
+      const json = snapshot();
+      const thumb = canvas.toDataURL({
+        format: "png",
+        quality: 0.4,
+        multiplier: 0.25,
+      });
+      updateCanvas(
+        usePresentationStore.getState().currentSlideIndex,
+        json,
+        thumb,
+      );
+    };
 
     const sync = (evt?: fabric.IEvent) => {
-      if ((evt?.target as any)?.customType === 'shape-guide') return
-      persist()
-    }
-    canvas.on('object:modified', sync)
-    canvas.on('object:added', sync)
-    canvas.on('object:removed', sync)
-    canvas.on('selection:created', (e) => {
-      const obj = e.selected?.[0] as fabric.Object & { id?: string }
-      setSelectedObjectId(obj?.id ?? obj?.type ?? null)
-      if (obj?.type === 'i-text' && typeof (obj as fabric.IText).fill === 'string') {
-        setLastSelectedTextColor((obj as fabric.IText).fill as string)
+      if ((evt?.target as any)?.customType === "shape-guide") return;
+      persist();
+    };
+    canvas.on("object:modified", sync);
+    canvas.on("object:added", sync);
+    canvas.on("object:removed", sync);
+    canvas.on("selection:created", (e) => {
+      const obj = e.selected?.[0] as fabric.Object & { id?: string };
+      setSelectedObjectId(obj?.id ?? obj?.type ?? null);
+      if (
+        obj?.type === "i-text" &&
+        typeof (obj as fabric.IText).fill === "string"
+      ) {
+        setLastSelectedTextColor((obj as fabric.IText).fill as string);
       }
       if (isShapeObject(obj)) {
         setShapeStyle({
-          fill: typeof obj.fill === 'string' ? obj.fill : shapeStyle.fill,
-          stroke: typeof obj.stroke === 'string' ? obj.stroke : shapeStyle.stroke,
+          fill: typeof obj.fill === "string" ? obj.fill : shapeStyle.fill,
+          stroke:
+            typeof obj.stroke === "string" ? obj.stroke : shapeStyle.stroke,
           strokeWidth: Number(obj.strokeWidth ?? shapeStyle.strokeWidth),
           opacity: Number(obj.opacity ?? shapeStyle.opacity),
-        })
+        });
       }
-    })
-    canvas.on('selection:updated', (e) => {
-      const obj = e.selected?.[0] as fabric.Object & { id?: string }
-      setSelectedObjectId(obj?.id ?? obj?.type ?? null)
-      if (obj?.type === 'i-text' && typeof (obj as fabric.IText).fill === 'string') {
-        setLastSelectedTextColor((obj as fabric.IText).fill as string)
+    });
+    canvas.on("selection:updated", (e) => {
+      const obj = e.selected?.[0] as fabric.Object & { id?: string };
+      setSelectedObjectId(obj?.id ?? obj?.type ?? null);
+      if (
+        obj?.type === "i-text" &&
+        typeof (obj as fabric.IText).fill === "string"
+      ) {
+        setLastSelectedTextColor((obj as fabric.IText).fill as string);
       }
       if (isShapeObject(obj)) {
         setShapeStyle({
-          fill: typeof obj.fill === 'string' ? obj.fill : shapeStyle.fill,
-          stroke: typeof obj.stroke === 'string' ? obj.stroke : shapeStyle.stroke,
+          fill: typeof obj.fill === "string" ? obj.fill : shapeStyle.fill,
+          stroke:
+            typeof obj.stroke === "string" ? obj.stroke : shapeStyle.stroke,
           strokeWidth: Number(obj.strokeWidth ?? shapeStyle.strokeWidth),
           opacity: Number(obj.opacity ?? shapeStyle.opacity),
-        })
+        });
       }
-    })
-    canvas.on('selection:cleared', () => setSelectedObjectId(null))
+    });
+    canvas.on("selection:cleared", () => setSelectedObjectId(null));
 
-    return () => { canvas.dispose(); fabricRef.current = null }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elRef])
+    return () => {
+      canvas.dispose();
+      fabricRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [elRef]);
 
   useEffect(() => {
-    const canvas = fabricRef.current
-    if (!canvas) return
+    const canvas = fabricRef.current;
+    if (!canvas) return;
 
     const clearPoly = () => {
-      polyGuides.current.forEach((obj) => canvas.remove(obj))
-      polyGuides.current = []
-      if (polyLiveLine.current) canvas.remove(polyLiveLine.current)
-      polyLiveLine.current = null
-      polyPoints.current = []
-      canvas.renderAll()
-    }
+      polyGuides.current.forEach((obj) => canvas.remove(obj));
+      polyGuides.current = [];
+      if (polyLiveLine.current) canvas.remove(polyLiveLine.current);
+      polyLiveLine.current = null;
+      polyPoints.current = [];
+      canvas.renderAll();
+    };
 
-    if (shapeDrawMode === 'free') {
-      clearPoly()
-      canvas.isDrawingMode = true
-      const brush = canvas.freeDrawingBrush ?? new fabric.PencilBrush(canvas)
-      brush.color = shapeStyle.stroke
-      brush.width = shapeStyle.strokeWidth
-      canvas.freeDrawingBrush = brush
+    if (shapeDrawMode === "free") {
+      clearPoly();
+      canvas.isDrawingMode = true;
+      const brush = canvas.freeDrawingBrush ?? new fabric.PencilBrush(canvas);
+      brush.color = shapeStyle.stroke;
+      brush.width = shapeStyle.strokeWidth;
+      canvas.freeDrawingBrush = brush;
       const onPath = (e: fabric.IEvent) => {
-        const path = (e as any).path as fabric.Path | undefined
-        if (!path) return
+        const path = (e as any).path as fabric.Path | undefined;
+        if (!path) return;
         path.set({
           id: uuid(),
-          customType: 'shape',
-          shapeType: 'free-path',
-          fill: '',
+          customType: "shape",
+          shapeType: "free-path",
+          fill: "",
           stroke: shapeStyle.stroke,
           strokeWidth: shapeStyle.strokeWidth,
           opacity: shapeStyle.opacity,
-        } as any)
-        canvas.setActiveObject(path)
-      }
-      canvas.on('path:created', onPath)
+        } as any);
+        canvas.setActiveObject(path);
+      };
+      canvas.on("path:created", onPath);
       return () => {
-        canvas.off('path:created', onPath)
-        canvas.isDrawingMode = false
-      }
+        canvas.off("path:created", onPath);
+        canvas.isDrawingMode = false;
+      };
     }
 
-    canvas.isDrawingMode = false
+    canvas.isDrawingMode = false;
 
-    if (shapeDrawMode !== 'polygon') {
-      clearPoly()
-      return
+    if (shapeDrawMode !== "polygon") {
+      clearPoly();
+      return;
     }
 
     const nearFirst = (p: fabric.Point) => {
-      if (!polyPoints.current.length) return false
-      const f = polyPoints.current[0]
-      return Math.hypot(p.x - f.x, p.y - f.y) < 12
-    }
+      if (!polyPoints.current.length) return false;
+      const f = polyPoints.current[0];
+      return Math.hypot(p.x - f.x, p.y - f.y) < 12;
+    };
 
     const finishPolygon = () => {
-      if (polyPoints.current.length < 3) return
+      if (polyPoints.current.length < 3) return;
       const shape = new fabric.Polygon(
         polyPoints.current.map((p) => ({ x: p.x, y: p.y })),
         {
           id: uuid(),
-          customType: 'shape',
-          shapeType: 'custom-polygon',
+          customType: "shape",
+          shapeType: "custom-polygon",
           fill: shapeStyle.fill,
           stroke: shapeStyle.stroke,
           strokeWidth: shapeStyle.strokeWidth,
           opacity: shapeStyle.opacity,
-        } as any
-      )
-      clearPoly()
-      canvas.add(shape)
-      canvas.setActiveObject(shape)
-      canvas.renderAll()
-      setShapeDrawMode('none')
-    }
+        } as any,
+      );
+      clearPoly();
+      canvas.add(shape);
+      canvas.setActiveObject(shape);
+      canvas.renderAll();
+      setShapeDrawMode("none");
+    };
 
     const onDown = (evt: fabric.IEvent<Event>) => {
-      const p = canvas.getPointer(evt.e)
-      const point = new fabric.Point(p.x, p.y)
+      const p = canvas.getPointer(evt.e);
+      const point = new fabric.Point(p.x, p.y);
 
       if (polyPoints.current.length >= 3 && nearFirst(point)) {
-        finishPolygon()
-        return
+        finishPolygon();
+        return;
       }
 
       const dot = new fabric.Circle({
@@ -186,13 +220,13 @@ export function useFabricCanvas(
         fill: shapeStyle.stroke,
         selectable: false,
         evented: false,
-        customType: 'shape-guide',
+        customType: "shape-guide",
         excludeFromExport: true,
-      } as any)
-      polyGuides.current.push(dot)
-      canvas.add(dot)
+      } as any);
+      polyGuides.current.push(dot);
+      canvas.add(dot);
 
-      const prev = polyPoints.current[polyPoints.current.length - 1]
+      const prev = polyPoints.current[polyPoints.current.length - 1];
       if (prev) {
         const line = new fabric.Line([prev.x, prev.y, point.x, point.y], {
           stroke: shapeStyle.stroke,
@@ -200,21 +234,21 @@ export function useFabricCanvas(
           selectable: false,
           evented: false,
           strokeDashArray: [4, 4],
-          customType: 'shape-guide',
+          customType: "shape-guide",
           excludeFromExport: true,
-        } as any)
-        polyGuides.current.push(line)
-        canvas.add(line)
+        } as any);
+        polyGuides.current.push(line);
+        canvas.add(line);
       }
 
-      polyPoints.current.push(point)
-      canvas.renderAll()
-    }
+      polyPoints.current.push(point);
+      canvas.renderAll();
+    };
 
     const onMove = (evt: fabric.IEvent<Event>) => {
-      const last = polyPoints.current[polyPoints.current.length - 1]
-      if (!last) return
-      const p = canvas.getPointer(evt.e)
+      const last = polyPoints.current[polyPoints.current.length - 1];
+      if (!last) return;
+      const p = canvas.getPointer(evt.e);
       if (!polyLiveLine.current) {
         polyLiveLine.current = new fabric.Line([last.x, last.y, p.x, p.y], {
           stroke: shapeStyle.stroke,
@@ -222,62 +256,62 @@ export function useFabricCanvas(
           selectable: false,
           evented: false,
           strokeDashArray: [3, 3],
-          customType: 'shape-guide',
+          customType: "shape-guide",
           excludeFromExport: true,
-        } as any)
-        canvas.add(polyLiveLine.current)
+        } as any);
+        canvas.add(polyLiveLine.current);
       } else {
-        polyLiveLine.current.set({ x1: last.x, y1: last.y, x2: p.x, y2: p.y })
+        polyLiveLine.current.set({ x1: last.x, y1: last.y, x2: p.x, y2: p.y });
       }
-      canvas.renderAll()
-    }
+      canvas.renderAll();
+    };
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        clearPoly()
-        setShapeDrawMode('none')
+      if (e.key === "Escape") {
+        clearPoly();
+        setShapeDrawMode("none");
       }
-    }
+    };
 
-    canvas.on('mouse:down', onDown)
-    canvas.on('mouse:move', onMove)
-    window.addEventListener('keydown', onKey)
+    canvas.on("mouse:down", onDown);
+    canvas.on("mouse:move", onMove);
+    window.addEventListener("keydown", onKey);
 
     return () => {
-      canvas.off('mouse:down', onDown)
-      canvas.off('mouse:move', onMove)
-      window.removeEventListener('keydown', onKey)
-      clearPoly()
-    }
-  }, [shapeDrawMode, shapeStyle, setShapeDrawMode])
+      canvas.off("mouse:down", onDown);
+      canvas.off("mouse:move", onMove);
+      window.removeEventListener("keydown", onKey);
+      clearPoly();
+    };
+  }, [shapeDrawMode, shapeStyle, setShapeDrawMode]);
 
   // Load slide on index change
   useEffect(() => {
-    const canvas = fabricRef.current
-    if (!canvas) return
-    const slide = presentation.slides[currentSlideIndex]
-    if (!slide) return
+    const canvas = fabricRef.current;
+    if (!canvas) return;
+    const slide = presentation.slides[currentSlideIndex];
+    if (!slide) return;
 
     const load = async () => {
-      isLoadingSlide.current = true
-      if (slide.canvasJson && slide.canvasJson !== '{}') {
+      isLoadingSlide.current = true;
+      if (slide.canvasJson && slide.canvasJson !== "{}") {
         await new Promise<void>((res) =>
           canvas.loadFromJSON(slide.canvasJson, () => {
-            canvas.backgroundColor = slide.backgroundColor
-            canvas.renderAll()
-            res()
-          })
-        )
+            canvas.backgroundColor = slide.backgroundColor;
+            canvas.renderAll();
+            res();
+          }),
+        );
       } else {
-        canvas.clear()
-        canvas.backgroundColor = slide.backgroundColor
-        canvas.renderAll()
+        canvas.clear();
+        canvas.backgroundColor = slide.backgroundColor;
+        canvas.renderAll();
       }
-      isLoadingSlide.current = false
-    }
-    load()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSlideIndex, presentation.slides[currentSlideIndex]?.canvasJson])
+      isLoadingSlide.current = false;
+    };
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentSlideIndex, presentation.slides[currentSlideIndex]?.canvasJson]);
 
-  return fabricRef
+  return fabricRef;
 }

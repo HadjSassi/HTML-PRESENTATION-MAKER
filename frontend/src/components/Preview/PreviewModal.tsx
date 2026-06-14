@@ -1,32 +1,41 @@
-import { useEffect, useRef } from 'react'
-import { usePresentationStore } from '../../store/usePresentationStore'
+import { useEffect, useRef } from "react";
+import { usePresentationStore } from "../../store/usePresentationStore";
 
-const FABRIC_CDN = 'https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js'
+const FABRIC_CDN =
+  "https://cdn.jsdelivr.net/npm/fabric@5.3.0/dist/fabric.min.js";
 
 const ANIM_MAP: Record<string, string> = {
-  'fade':        'hpmFadeIn {d}ms ease',
-  'slide-left':  'hpmSlideLeft {d}ms ease',
-  'slide-right': 'hpmSlideRight {d}ms ease',
-  'zoom-in':     'hpmZoomIn {d}ms ease',
-  'none':        '',
-}
+  fade: "hpmFadeIn {d}ms ease",
+  "slide-left": "hpmSlideLeft {d}ms ease",
+  "slide-right": "hpmSlideRight {d}ms ease",
+  "zoom-in": "hpmZoomIn {d}ms ease",
+  none: "",
+};
 
 export function PreviewModal() {
-  const { presentation, isPreviewOpen, togglePreview } = usePresentationStore()
-  const iframeRef = useRef<HTMLIFrameElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const { presentation, isPreviewOpen, togglePreview } = usePresentationStore();
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const buildHtml = () => {
-    const slidesData = JSON.stringify(presentation.slides.map((s) => ({
-      id: s.id,
-      canvas_json: s.canvasJson,
-      background_color: s.backgroundColor,
-      anim: (ANIM_MAP[s.animation.type] ?? '').replace('{d}', String(s.animation.duration * 1000)),
-    })))
-    const slideIdToIndex = presentation.slides.reduce((acc, slide, index) => {
-      acc[slide.id] = index
-      return acc
-    }, {} as Record<string, number>)
+    const slidesData = JSON.stringify(
+      presentation.slides.map((s) => ({
+        id: s.id,
+        canvas_json: s.canvasJson,
+        background_color: s.backgroundColor,
+        anim: (ANIM_MAP[s.animation.type] ?? "").replace(
+          "{d}",
+          String(s.animation.duration * 1000),
+        ),
+      })),
+    );
+    const slideIdToIndex = presentation.slides.reduce(
+      (acc, slide, index) => {
+        acc[slide.id] = index;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
     return `<!DOCTYPE html><html><head><meta charset="UTF-8">
 <title>${presentation.title}</title>
@@ -176,32 +185,34 @@ document.addEventListener('keyup', (e) => {
 });
 
 show(0,1);
-</script></body></html>`
-  }
+</script></body></html>`;
+  };
 
   useEffect(() => {
     if (isPreviewOpen && containerRef.current) {
-      containerRef.current.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+      containerRef.current.requestFullscreen().catch((err) => {
+        console.error(
+          `Error attempting to enable full-screen mode: ${err.message} (${err.name})`,
+        );
       });
     }
-    
+
     const handleMessage = (e: MessageEvent) => {
-      if (e.data === 'close-preview') togglePreview();
-    }
+      if (e.data === "close-preview") togglePreview();
+    };
     const handleFullscreenChange = () => {
       if (!document.fullscreenElement) togglePreview();
-    }
+    };
 
-    window.addEventListener('message', handleMessage);
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    window.addEventListener("message", handleMessage);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
     return () => {
-      window.removeEventListener('message', handleMessage);
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    }
-  }, [isPreviewOpen, togglePreview])
+      window.removeEventListener("message", handleMessage);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, [isPreviewOpen, togglePreview]);
 
-  if (!isPreviewOpen) return null
+  if (!isPreviewOpen) return null;
 
   return (
     <div ref={containerRef} className="fixed inset-0 z-50 bg-black">
@@ -213,5 +224,5 @@ show(0,1);
         srcDoc={buildHtml()}
       />
     </div>
-  )
+  );
 }

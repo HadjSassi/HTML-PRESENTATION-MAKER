@@ -1,29 +1,39 @@
-import { useRef, useState } from 'react'
-import { Eye, Save, Download, Upload, RotateCcw, Settings, QrCode } from 'lucide-react'
-import { usePresentationStore } from '../../store/usePresentationStore'
-import { Button } from '../UI/Button'
-import { exportHpm, importHpm } from '../../utils/fileUtils'
-import { APP_NAME, APP_AUTHOR } from '../../utils/constants'
-import { SettingsModal } from './SettingsModal'
-import { QrCodeModal } from './QrCodeModal'
+import { useRef, useState } from "react";
+import {
+  Eye,
+  Save,
+  Download,
+  Upload,
+  RotateCcw,
+  Settings,
+  QrCode,
+} from "lucide-react";
+import { usePresentationStore } from "../../store/usePresentationStore";
+import { Button } from "../UI/Button";
+import { exportHpm, importHpm } from "../../utils/fileUtils";
+import { APP_NAME, APP_AUTHOR } from "../../utils/constants";
+import { SettingsModal } from "./SettingsModal";
+import { QrCodeModal } from "./QrCodeModal";
 
 export function Header() {
   const { presentation, isDirty, setPresentationInfo, togglePreview, reset } =
-    usePresentationStore()
-  const importRef = useRef<HTMLInputElement>(null)
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  const [qrCodeOpen, setQrCodeOpen] = useState(false)
-  const load = usePresentationStore((s) => s.load)
+    usePresentationStore();
+  const importRef = useRef<HTMLInputElement>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [qrCodeOpen, setQrCodeOpen] = useState(false);
+  const load = usePresentationStore((s) => s.load);
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0];
+    if (!file) return;
     try {
-      const p = await importHpm(file)
-      load(p)
-    } catch { alert('Invalid .hpm file') }
-    e.target.value = ''
-  }
+      const p = await importHpm(file);
+      load(p);
+    } catch {
+      alert("Invalid .hpm file");
+    }
+    e.target.value = "";
+  };
 
   return (
     <header className="flex items-center h-12 px-4 bg-panel border-b border-border shrink-0 gap-3">
@@ -47,50 +57,92 @@ export function Header() {
         placeholder="Presentation title"
       />
 
-      {isDirty && <span className="w-1.5 h-1.5 rounded-full bg-warning shrink-0" title="Unsaved changes" />}
+      {isDirty && (
+        <span
+          className="w-1.5 h-1.5 rounded-full bg-warning shrink-0"
+          title="Unsaved changes"
+        />
+      )}
 
       <div className="flex-1" />
 
       {/* Actions */}
       <div className="flex items-center gap-1.5">
-        <Button variant="ghost" size="sm" icon={<RotateCcw size={14} />}
-          onClick={() => confirm('Start a new presentation?') && reset()}>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<RotateCcw size={14} />}
+          onClick={() => confirm("Start a new presentation?") && reset()}
+        >
           New
         </Button>
 
-        <input ref={importRef} type="file" accept=".hpm,.json" className="hidden" onChange={handleImport} />
-        <Button variant="ghost" size="sm" icon={<Upload size={14} />}
-          onClick={() => importRef.current?.click()}>
+        <input
+          ref={importRef}
+          type="file"
+          accept=".hpm,.json"
+          className="hidden"
+          onChange={handleImport}
+        />
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<Upload size={14} />}
+          onClick={() => importRef.current?.click()}
+        >
           Open
         </Button>
 
-        <Button variant="secondary" size="sm" icon={<Save size={14} />}
-          onClick={() => exportHpm(presentation)}>
+        <Button
+          variant="secondary"
+          size="sm"
+          icon={<Save size={14} />}
+          onClick={() => exportHpm(presentation)}
+        >
           Save
         </Button>
 
-        <Button variant="secondary" size="sm" icon={<Download size={14} />}
-          onClick={() => exportHpm(presentation)}>
+        <Button
+          variant="secondary"
+          size="sm"
+          icon={<Download size={14} />}
+          onClick={() => exportHpm(presentation)}
+        >
           Export
         </Button>
 
-        <Button variant="primary" size="sm" icon={<Eye size={14} />}
-          onClick={togglePreview}>
+        <Button
+          variant="primary"
+          size="sm"
+          icon={<Eye size={14} />}
+          onClick={togglePreview}
+        >
           Preview
         </Button>
 
-        <Button variant="ghost" size="sm" icon={<QrCode size={14} />}
-          onClick={() => setQrCodeOpen(true)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<QrCode size={14} />}
+          onClick={() => setQrCodeOpen(true)}
+        >
           Generate QR
         </Button>
 
-        <Button variant="ghost" size="sm" icon={<Settings size={14} />}
-          onClick={() => setSettingsOpen(true)}>
+        <Button
+          variant="ghost"
+          size="sm"
+          icon={<Settings size={14} />}
+          onClick={() => setSettingsOpen(true)}
+        >
           Settings
         </Button>
       </div>
-      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <SettingsModal
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      />
       <QrCodeModal open={qrCodeOpen} onClose={() => setQrCodeOpen(false)} />
     </header>
-  )
+  );
 }

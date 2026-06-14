@@ -1,18 +1,17 @@
-import { createContext, useContext, useRef, type RefObject } from 'react'
-import type { fabric } from 'fabric'
+import { createContext, useContext, useRef, type RefObject } from "react";
+import type { fabric } from "fabric";
 
 interface CanvasCtx {
-  canvasRef: RefObject<fabric.Canvas | null>
+  canvasRef: RefObject<fabric.Canvas | null>;
 }
 
-const CanvasContext = createContext<CanvasCtx | null>(null)
+const CanvasContext = createContext<CanvasCtx | null>(null);
 
-export { CanvasContext }
+export { CanvasContext };
 
 export function useCanvasCtx(): CanvasCtx {
-  const ctx = useContext(CanvasContext)
-  if (!ctx) throw new Error('useCanvasCtx must be used inside <CanvasProvider>')
-  return ctx
+  const ctx = useContext(CanvasContext);
+  if (!ctx)
+    throw new Error("useCanvasCtx must be used inside <CanvasProvider>");
+  return ctx;
 }
-
-
