@@ -54,6 +54,42 @@ export function PreviewModal() {
 var S=${slidesData}, cur=0, hist=[];
 var slideIdMap=${JSON.stringify(slideIdToIndex)};
 var c=new fabric.Canvas('c',{width:960,height:540,selection:false,interactive:true});
+var ws = null;
+var pendingSlide = null;
+
+function getRealtimeUrl() {
+    return window.parent.location.origin.replace(/^http/, 'ws') + '/ws/realtime';
+}
+
+function connectRealtime() {
+    ws = new WebSocket(getRealtimeUrl());
+    ws.onopen = function() {
+        if (pendingSlide) {
+            ws.send(JSON.stringify(pendingSlide));
+        }
+    };
+    ws.onclose = function() {
+        setTimeout(connectRealtime, 1000);
+    };
+}
+
+function publishSlideState() {
+    var s = S[cur];
+    if (!s) return;
+    pendingSlide = {
+        type: 'slideChanged',
+        slideId: s.id,
+        slideIndex: cur,
+        slideNumber: cur + 1,
+        slideName: s.title,
+        presentationTitle: ${JSON.stringify(presentation.title)}
+    };
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(pendingSlide));
+    }
+}
+
+connectRealtime();
 
 function resizeCanvas() {
     const canvasEl = c.getElement().parentNode;
@@ -120,6 +156,7 @@ function show(n,d, anim){
     }
     setObjectsInteractive(false);
     resizeCanvas();
+    publishSlideState();
   });
 }
 

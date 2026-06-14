@@ -39,7 +39,6 @@ interface Store {
   shapeDrawMode: ShapeDrawMode;
   isPreviewOpen: boolean;
   isDirty: boolean;
-  ws: WebSocket | null;
   // Actions
   reset: () => void;
   load: (p: Presentation) => void;
@@ -72,10 +71,8 @@ const renumberSlides = (slides: Slide[]) => {
   }));
 };
 
-const ws = new WebSocket("ws://localhost:8080");
-
 export const usePresentationStore = create<Store>()(
-  immer((set, get) => ({
+  immer((set) => ({
     presentation: newPresentation(),
     currentSlideIndex: 0,
     selectedObjectId: null,
@@ -84,7 +81,6 @@ export const usePresentationStore = create<Store>()(
     shapeDrawMode: "none",
     isPreviewOpen: false,
     isDirty: false,
-    ws,
 
     reset: () =>
       set((s) => {
@@ -149,11 +145,6 @@ export const usePresentationStore = create<Store>()(
         s.isDirty = true;
       }),
     selectSlide: (idx) => {
-      const { presentation, ws } = get();
-      const slideName = presentation.slides[idx].title;
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ type: "slideChanged", slideName }));
-      }
       set((s) => {
         s.currentSlideIndex = idx;
         s.selectedObjectId = null;

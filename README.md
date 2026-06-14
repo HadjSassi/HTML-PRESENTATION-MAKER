@@ -65,13 +65,17 @@ make prettier                                   # Format code
 core/                  FastAPI backend
 ├── main.py           ├─ Routers: /api/files, /api/export
 ├── models/           ├─ Schemas: Presentation, Slide, Animation
-├── services/         ├─ Export HTML, File persistence
+├── services/         ├─ Export HTML, File persistence, realtime relay
 └── requirements.txt
 
-frontend/              React + Fabric.js
+frontend/              React + Fabric.js editor
 ├── src/components/   ├─ Header, Toolbar, SlidePanel, Canvas
 ├── src/store/        ├─ Zustand (global state)
 ├── src/hooks/        ├─ useFabricCanvas, useKeyboardShortcuts
+└── package.json
+
+viewer/                React note viewer
+├── src/App.tsx       ├─ Slide info + note input
 └── package.json
 
 docker-base/          Reverse proxy & orchestration
@@ -121,6 +125,7 @@ POST   /api/files/save         ← Save .hpm locally/cloud
 POST   /api/files/load         ← Load .hpm
 POST   /api/export/html        ← Download standalone HTML
 GET    /api/files/health       ← Health check
+WS     /ws/realtime            ← Slide sync + viewer notes
 ```
 
 Docs: http://localhost:8000/docs (Swagger UI)

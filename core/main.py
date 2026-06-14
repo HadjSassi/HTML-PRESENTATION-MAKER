@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import export, files
+from routers import export, files, realtime
 
 app = FastAPI(
     title="HTML Presentation Maker API",
@@ -19,6 +19,7 @@ app.add_middleware(
 
 app.include_router(files.router)
 app.include_router(export.router)
+app.include_router(realtime.router)
 
 
 @app.get("/")

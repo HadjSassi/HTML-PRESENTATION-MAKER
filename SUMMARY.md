@@ -12,6 +12,7 @@ Instead of Streamlit, a **production-ready full-stack application**:
 - ✅ **React 18** — Professional UI/UX, real-time interactivity
 - ✅ **Fabric.js** — Canvas-based editing (Adobe/Figma-like)
 - ✅ **FastAPI** — Lightweight, async Python backend
+- ✅ **WebSocket relay** — Backend bridge between editor preview and viewer notes
 - ✅ **TypeScript** — Type-safe frontend & backend
 - ✅ **Tailwind CSS** — Dark theme (Adobe-inspired design)
 - ✅ **Docker** — Production-ready containerization
@@ -93,7 +94,7 @@ PresentationMaker/
 │       ├── files.py                # POST /api/files/save, /load
 │       └── export.py               # POST /api/export/html
 │
-├── 📂 frontend/ (React + Vite)
+├── 📂 frontend/ (React + Vite editor)
 │   ├── package.json                # npm dependencies
 │   ├── vite.config.ts              # Vite + API proxy
 │   ├── tsconfig.json               # TypeScript strict mode
@@ -152,6 +153,7 @@ PresentationMaker/
 │               ├── ColorPicker.tsx # Color selector
 │               └── Select.tsx      # Dropdown + slider
 │
+├── 📂 viewer/ (React note viewer)
 └── 📂 docker-base/
     ├── docker-compose.yml          # 3 services: frontend, backend, caddy
     └── Caddyfile                   # Reverse proxy + SSL
@@ -397,4 +399,3 @@ docker compose up -d
 **Ready to build amazing presentations! 🎨**
 
 **by HADJ SASSI** — 2026
-
