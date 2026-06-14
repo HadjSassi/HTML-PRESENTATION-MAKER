@@ -1,12 +1,13 @@
 .PHONY: install install-frontend install-backend start stop down ps logs dev
 
-COMPOSE_DEV = cd docker-base && docker compose -f docker-compose.dev.yml
+COMPOSE_DEV = cd docker-base && docker compose
 
 # ── Local dev ──────────────────────────────────────────────────────
 install: install-frontend install-backend
 
 install-frontend:
 	cd frontend && npm install
+	cd viewer && npm install
 
 install-backend:
 	pip install -r core/requirements.txt
@@ -15,6 +16,7 @@ install-backend:
 dev:
 	@echo "Starting dev servers..." && \
 	(cd frontend && npm run dev &) && \
+	(cd viewer && npm run dev &) && \
 	(cd core && uvicorn main:app --reload --port 8000)
 
 # ── Docker ─────────────────────────────────────────────────────────
